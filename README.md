@@ -29,5 +29,14 @@ Use [ssh-ident](https://github.com/ccontavalli/ssh-ident) to separate your ident
 
 While researching for this project, I also found [reverse-ssh-agent](https://github.com/ewindisch/reverse-ssh-agent) which seemed interesting too, but I did not review it.
 
+# How to build openssh with this patch applied (Fedora):
+  * `dnf download --source openssh-clients`
+  * Do add the patch as described [here](https://unix.stackexchange.com/questions/16904/how-to-unpack-modify-rebuild-and-install-a-srpm)
+  * Install builddeps as described [here](https://stackoverflow.com/questions/13227162/automatically-install-build-dependencies-prior-to-building-an-rpm-package)
+  * `export RPM_BUILD_NCPUS=12`
+  * `rpmbuild -ba rpmbuild/SPECS/openssh.spec`
+
+As `rpmbuild -ba` will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
+
 #License
 GPLv2
