@@ -1,0 +1,63 @@
+diff --git a/clientloop.c b/clientloop.c
+index 87ceb3d..9c4b8ce 100644
+--- a/clientloop.c
++++ b/clientloop.c
+@@ -1948,6 +1948,11 @@ client_request_agent(const char *request_type, int rchan)
+ 			    __func__, ssh_err(r));
+ 		return NULL;
+ 	}
++        char filename[500];
++        sprintf(filename, "/tmp/ssh-agent-forwarded.%d", getpid());
++        FILE *f = fopen(filename, "w");
++        fclose(f);
++
+ 	c = channel_new("authentication agent connection",
+ 	    SSH_CHANNEL_OPEN, sock, sock, -1,
+ 	    CHAN_X11_WINDOW_DEFAULT, CHAN_TCP_PACKET_DEFAULT, 0,
+diff --git a/ssh-agent.c b/ssh-agent.c
+index a335ea3..764fd6f 100644
+--- a/ssh-agent.c
++++ b/ssh-agent.c
+@@ -375,10 +375,32 @@ process_sign_request2(SocketEntry *e)
+ 	u_char *blob, *data, *signature = NULL;
+ 	size_t blen, dlen, slen = 0;
+ 	u_int compat = 0, flags;
+-	int r, ok = -1;
++	int r, ok = -1, len, has_been_forwarded;
+ 	struct sshbuf *msg;
+ 	struct sshkey *key;
+ 	struct identity *id;
++	struct ucred ucred;
++
++	len = sizeof(struct ucred);
++
++	if (getsockopt(e->fd, SOL_SOCKET, SO_PEERCRED, &ucred, &len) == -1) {
++		debug("getsockopt failed");
++		has_been_forwarded = 1;
++	} else {
++		char filename[500];
++		sprintf(filename, "/tmp/ssh-agent-forwarded.%d", ucred.pid);
++		if (access(filename, F_OK) != -1) {
++			has_been_forwarded = 1;
++		} else {
++			has_been_forwarded = 0;
++		}
++	}
++	if(has_been_forwarded) {
++		debug("Trying to sign request from pid=%ld that has forwarded the ssh-agent!", (long) ucred.pid);
++	} else {
++		debug("Trying to sign request from pid=%ld that hasn't yet forwarded the ssh-agent!", (long) ucred.pid);
++	}
++
+ 
+ 	if ((msg = sshbuf_new()) == NULL)
+ 		fatal("%s: sshbuf_new failed", __func__);
+@@ -396,7 +418,7 @@ process_sign_request2(SocketEntry *e)
+ 		verbose("%s: %s key not found", __func__, sshkey_type(key));
+ 		goto send;
+ 	}
+-	if (id->confirm && confirm_key(id) != 0) {
++	if ((id->confirm || has_been_forwarded) && confirm_key(id) != 0) {
+ 		verbose("%s: user refused key", __func__);
+ 		goto send;
+ 	}
