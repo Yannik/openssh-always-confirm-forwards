@@ -24,5 +24,10 @@ Because I am definitely no expert in C and just hacked this together based on my
 
 So, use it at your own risk!
 
+# How to secure using ssh-agent a bit more:
+Use [ssh-ident](https://github.com/ccontavalli/ssh-ident) to separate your identities!
+
+While researching for this project, I also found [reverse-ssh-agent](https://github.com/ewindisch/reverse-ssh-agent) which seemed interesting too, but I did not review it.
+
 #License
 GPLv2
