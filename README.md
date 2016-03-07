@@ -43,7 +43,12 @@ As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-r
 # Make sure that your custom version of ssh-agent is actually being used
 On Fedora/Gnome by default the openssh `ssh-agent` is not used, but a custom ssh-agent provided by gnome-keyring. Check `$SSH_AUTH_SOCK`, if it is `/run/user/uid/keyring/ssh`, it is gnome keyring. The socket path for openssh `ssh-agent` is something like `/tmp/ssh-xxxxx/agent.pid`.
 
-You can disable the gnome-keyring ssh component like this: `mv /etc/xdg/autostart/gnome-keyring-ssh.desktop /etc/xdg/autostart/gnome-keyring-ssh.desktop.disabled`
+You can disable the gnome-keyring ssh component like this:
+
+```
+mv /etc/xdg/autostart/gnome-keyring-ssh.desktop /etc/xdg/autostart/gnome-keyring-ssh.desktop.disabled
+```
+
 Log out of your session and back in, and `$SSH_AUTH_SOCK` should now be empty when you open a shell.
 
 Append to your `.zshrc`/`.bashrc`:
