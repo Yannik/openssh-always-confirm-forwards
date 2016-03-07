@@ -36,7 +36,43 @@ While researching for this project, I also found [reverse-ssh-agent](https://git
   * `export RPM_BUILD_NCPUS=12`
   * `rpmbuild -ba rpmbuild/SPECS/openssh.spec`
 
-As `rpmbuild -ba` will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
+As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html)) will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
 
-#License
+  * Install using `rpm --install rpmbuild/RPMS/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
+
+# Make sure that your custom version of ssh-agent is actually being used
+On Fedora/Gnome by default the openssh `ssh-agent` is not used, but a custom ssh-agent provided by gnome-keyring. Check `$SSH_AUTH_SOCK`, if it is `/run/user/uid/keyring/ssh`, it is gnome keyring. The socket path for openssh `ssh-agent` is something like `/tmp/ssh-xxxxx/agent.pid`.
+
+You can disable the gnome-keyring ssh component like this: `mv /etc/xdg/autostart/gnome-keyring-ssh.desktop /etc/xdg/autostart/gnome-keyring-ssh.desktop.disabled`
+Log out of your session and back in, and `$SSH_AUTH_SOCK` should now be empty when you open a shell.
+
+Append to your `.zshrc`/`.bashrc`:
+```
+ssh-add -l &>/dev/null
+if [ "$?" = 2 ]; then
+  test -r ~/.ssh-agent && \
+    eval "$(<~/.ssh-agent)" >/dev/null
+
+  ssh-add -l &>/dev/null
+  if [ "$?" = 2 ]; then
+    (umask 066; ssh-agent > ~/.ssh-agent)
+    eval "$(<~/.ssh-agent)" >/dev/null
+    ssh-add
+  fi
+fi
+```
+
+Modified from: [http://rabexc.org/posts/pitfalls-of-ssh-agents](http://rabexc.org/posts/pitfalls-of-ssh-agents)
+
+One thing you do unfortunately use from using this over gnome-keyring's ssh functionality is automatically adding keys when you start a ssh connection, instead, you need to add them manually using `ssh-add`.
+
+A workaround for this is to add something like
+
+    alias ssh='ssh-add -l > /dev/null || ssh-add && ssh'
+
+to your respective `.zshrc`/`.bashrc`.
+
+Here is a question on stackexchange on that topic: https://superuser.com/questions/325662/how-to-make-ssh-agent-automatically-add-the-key-on-demand
+
+# License
 GPLv2
