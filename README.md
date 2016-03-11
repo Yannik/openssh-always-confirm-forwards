@@ -38,7 +38,7 @@ While researching for this project, I also found [reverse-ssh-agent](https://git
 
 As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html)) will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
 
-  * Install using `rpm --install rpmbuild/RPMS/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
+  * Install using `rpm --install rpmbuild/RPMS/x86_64/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
 
 # Make sure that your custom version of ssh-agent is actually being used
 On Fedora/Gnome by default the openssh `ssh-agent` is not used, but a custom ssh-agent provided by gnome-keyring. Check `$SSH_AUTH_SOCK`, if it is `/run/user/uid/keyring/ssh`, it is gnome keyring. The socket path for openssh `ssh-agent` is something like `/tmp/ssh-xxxxx/agent.pid`.
