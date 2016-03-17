@@ -39,6 +39,9 @@ While researching for this project, I also found [reverse-ssh-agent](https://git
 As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html)) will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
 
   * Install using `rpm --install rpmbuild/RPMS/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
+  * Make sure that your package is not getting overwritten by a packge update in the fedora repo: 
+    * Either use [`dnf versionlock openssh-clients`](https://dnf-plugins-extras.readthedocs.org/en/latest/versionlock.html). This will still list the package as installed.
+    * or use the `exclude` option in `dnf.conf` (www.systutorials.com/1661/making-dnf-yum-not-update-certain-packages/). This will not list the selected packages with `dnf list installed` or on package updates anymore.
 
 # How to build openssh with this patch applied (Debian/Ubuntu):
   * `apt-get source openssh-client`
