@@ -34,11 +34,11 @@ While researching for this project, I also found [reverse-ssh-agent](https://git
   * Do add the patch as described [here](https://unix.stackexchange.com/questions/16904/how-to-unpack-modify-rebuild-and-install-a-srpm)
   * Install builddeps as described [here](https://stackoverflow.com/questions/13227162/automatically-install-build-dependencies-prior-to-building-an-rpm-package)
   * `export RPM_BUILD_NCPUS=12`
-  * `rpmbuild -ba rpmbuild/SPECS/openssh.spec`
+  * `rpmbuild -bb rpmbuild/SPECS/openssh.spec`
 
 As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html)) will completely clean the build, run configure again etc., you can just build it once and run `make` in `rpmbuild/BUILD` afterwards to build using modified versions of this patch.
 
-  * Install using `rpm --install rpmbuild/RPMS/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
+  * Install using `rpm --install rpmbuild/RPMS/x86_64/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
   * Make sure that your package is not getting overwritten by a packge update in the fedora repo: 
     * Either use [`dnf versionlock openssh-clients`](https://dnf-plugins-extras.readthedocs.org/en/latest/versionlock.html). This will still list the package as installed.
     * or use the `exclude` option in `dnf.conf` (www.systutorials.com/1661/making-dnf-yum-not-update-certain-packages/). This will not list the selected packages with `dnf list installed` or on package updates anymore.
