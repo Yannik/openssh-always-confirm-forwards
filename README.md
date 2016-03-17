@@ -40,6 +40,13 @@ As `rpmbuild -ba` ([rpmbuild reference](http://www.rpm.org/max-rpm-snapshot/ch-r
 
   * Install using `rpm --install rpmbuild/RPMS/openssh-clients-*.rpm`. You will probably want to use the `--replacepkgs` and/or `--replacefiles` options as you most likely already have `openssh-clients` installed.
 
+# How to build openssh with this patch applied (Debian/Ubuntu):
+  * `apt-get source openssh-client`
+  * `apt-get build-dep openssh-client`
+  * `cd openssh*`
+  * apply the patch manually, as the debian openssh package differs alot from the one on fedora from which this patch was created
+  * `dpkg-buildpackage`
+
 # Make sure that your custom version of ssh-agent is actually being used
 On Fedora/Gnome by default the openssh `ssh-agent` is not used, but a custom ssh-agent provided by gnome-keyring. Check `$SSH_AUTH_SOCK`, if it is `/run/user/uid/keyring/ssh`, it is gnome keyring. The socket path for openssh `ssh-agent` is something like `/tmp/ssh-xxxxx/agent.pid`.
 
