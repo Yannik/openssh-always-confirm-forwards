@@ -24,6 +24,9 @@ Because I am definitely no expert in C and just hacked this together based on my
 
 So, use it at your own risk!
 
+# Alternatives
+`ssh-add -c` prompts for every key use (including non-agent-forwarded ones). It's a bit annoying but it works!
+
 # How to secure using ssh-agent a bit more:
 Use [ssh-ident](https://github.com/ccontavalli/ssh-ident) to separate your identities!
 
